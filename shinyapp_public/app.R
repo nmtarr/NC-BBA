@@ -73,6 +73,7 @@ source("blocks.r")
 source("utils.r") #utilities file
 source("spp.r") #species function file
 source("blkcumhrfunc.r") #block hour graph
+source("google.r") # google spreadsheet block_needs integration
 # source("ncba_functions_shiny.R") #add this later to sync with Nathan work
 # source("ncba_functions.R") #add this later to sync with Nathan work
 # print(block_predicted_spp(block = block, source = "GAP"))
@@ -152,7 +153,7 @@ ui <- bootstrapPage(
           leafletOutput("mymap", height = "50vh")
         ),
       ),
-      div(class="row", id="mid_row_panel",
+      div(class = "row", id = "mid_row_panel",
         div(class = "col-md-4 panel",
           h3("Statistics"),
           h4(htmlOutput("block_status")),
@@ -163,16 +164,20 @@ ui <- bootstrapPage(
           downloadButton("download_block_checklists", "Download Checklists")
         ),
         div(class = "col-md-4 panel",
+          h3("Block Needs"),
+          dataTableOutput("block_needs_table")
+        ),
+        div(class = "col-md-4 panel",
           h3("Survey Hours"),
           plotOutput("blockhours")
         ),
+      ),
+      div(class = "row", id = "spp_list_row",
         div(class = "col-md-4 panel",
           h3("Species Accumulation"),
           plotOutput("spp_accumulation")
-        )
-      ),
-      div(class="row", id="spp_list_row",
-        div(class = "col-md-12 panel",
+        ),
+        div(class = "col-md-8 panel",
           h3("Species List"),
           dataTableOutput("spp_observed"),
           downloadButton("download_spplist", "Download")
@@ -860,6 +865,24 @@ observe({
     spp_accumulation_results()$plot
 
   })
+
+  #### DISPLAY BLOCK NEEDS ------
+  bn_block <- reactive({
+    if (length(rv_block$id) > 0) {
+      rv_block$id
+    } else {
+      "NONE"
+    }
+  })
+  output$block_needs_table <- renderDataTable(
+    get_block_needs(block = bn_block()),
+    options = list(
+        rownames = FALSE,
+        paging = FALSE,
+        searching = FALSE,
+        selection = "none"
+        )
+  )
 
   #### DISPLAY SPECIES LIST ------
   # output$spp_observed <- renderDataTable(
