@@ -90,9 +90,13 @@ ncba_failed <- "#dd0000"
 ncba_success <- "#43AA8B"
 ncba_white <- "#ffffff"
 ncba_gray <- "#aaaaaa"
+priority_colors <- c(
+  "High" = "#dd0000",
+  "Medium" = "#daaa00",
+  "Low" = "#2c3e50")
 
 # SETUP FILES
-current_block = ""
+current_block <- ""
 enableBookmarking("url")
 sd <- get_safe_dates()
 
@@ -165,7 +169,8 @@ ui <- bootstrapPage(
         ),
         div(class = "col-md-4 panel",
           h3("Block Needs"),
-          dataTableOutput("block_needs_table")
+          htmlOutput("block_needs_table")
+          # dataTableOutput("block_needs_table")
         ),
         div(class = "col-md-4 panel",
           h3("Survey Hours"),
@@ -874,15 +879,54 @@ observe({
       "NONE"
     }
   })
-  output$block_needs_table <- renderDataTable(
-    get_block_needs(block = bn_block()),
-    options = list(
-        rownames = FALSE,
-        paging = FALSE,
-        searching = FALSE,
-        selection = "none"
+  output$block_needs_table <- renderUI({
+    bn <- get_block_needs(block = bn_block())
+    
+    bn_breed_html <- "<h4>Breeding</h4>"
+    bn_winter_html <- "<h4>Wintering</h4>"
+    key_html <- paste0(
+      "<div style='font-size:0.95rem;padding:10px 0px;text-align:center;'>",
+      "<span style='color:", as.character(priority_colors["High"]),
+      "'>High Priority</span>, ",
+      "<span style='color:", as.character(priority_colors["Medium"]),
+      "'>Medium Priority</span>, ",
+      "<span style='color:", as.character(priority_colors["Low"]),
+      "'>Low Priority</span></div>"
+    )
+
+    if (!is.na(as.character(bn[1, "SEASON"]))) {
+      for (row in 1 : nrow(bn)) {
+
+        line <- sprintf(
+          "<div style='padding: 0px 10px; color:%s'><strong>%s</strong>: %s</div>",
+          as.character(priority_colors[as.character(bn[row, "PRIORITY"])]),
+          bn[row, "CRITERIA"],
+          bn[row, "DESCRIPTION"]
+          # bn[row, "DATE"]
         )
-  )
+        if (bn[row, "SEASON"] == "Breeding") {
+          bn_breed_html <- paste0(bn_breed_html, line)
+        } else {
+          bn_winter_html <- paste0(bn_winter_html, line)
+        }
+      }
+    } else {
+      none_html <- "<div style='padding: 0px 20px;'>None</div>"
+      bn_breed_html <- paste0(bn_breed_html, none_html)
+      bn_winter_html <- paste0(bn_winter_html, none_html)
+    }
+
+    HTML(paste0(bn_breed_html, bn_winter_html, key_html))
+  })
+  # output$block_needs_table <- renderDataTable(
+  #   get_block_needs(block = bn_block()),
+  #   options = list(
+  #       rownames = FALSE,
+  #       paging = FALSE,
+  #       searching = FALSE,
+  #       selection = "none"
+  #       )
+  # )
 
   #### DISPLAY SPECIES LIST ------
   # output$spp_observed <- renderDataTable(

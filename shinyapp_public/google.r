@@ -17,6 +17,6 @@ get_block_needs <- function(block = "NONE") {
   # filter results by block and return
   result <- bn_data[
     bn_data$ID_NCBA_BLOCK == block & bn_data$ACCESS == "Public",
-    c("SEASON", "PRIORITY", "CRITERIA", "DESCRIPTION")
+    c("DATE", "SEASON", "PRIORITY", "CRITERIA", "DESCRIPTION")
     ]
 }
