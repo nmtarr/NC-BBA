@@ -125,14 +125,14 @@ ui <- bootstrapPage(
     tags$head(includeCSS("styles.css")),
     tags$head(tags$link(rel="icon", href="/input_data/ncba_blue_wbnu.ico")),
     tabPanel("Blocks",
-      div(class="row", id="top_row_panel",
-        div(class="col-md-2 panel sidebar", id = "block_controls",
-          h3("Blocks", class="tab-control-title"),
+      div(class = "row", id = "top_row_panel",
+        div(class = "col-md-2 panel sidebar", id = "block_controls",
+          h3("Blocks", class = "tab-control-title"),
           tags$p(
             "Summary statistics page for block-level data.",
-            class="desc-text"
+            class = "desc-text"
             ),
-          div(class="tab-control-group",
+          div(class = "tab-control-group",
             selectInput(inputId = "APBlock", #name of input
             label = "Selected Priority Block", #label displayed in ui
             choices = c(
@@ -142,8 +142,8 @@ ui <- bootstrapPage(
             # in the previously created table
             selected = "NONE")
           ),
-          div(class="tab-control-group",
-            radioButtons("season_radio",label = h4("Season"),
+          div(class = "tab-control-group",
+            radioButtons("season_radio", label = h4("Season"),
               choices = list(
                 "All Records" = "All",
                 "Breeding" = "Breeding",
@@ -168,7 +168,7 @@ ui <- bootstrapPage(
           downloadButton("download_block_checklists", "Download Checklists")
         ),
         div(class = "col-md-4 panel",
-          h3("Block Needs"),
+          h3("Block Needs (testing)"),
           htmlOutput("block_needs_table")
           # dataTableOutput("block_needs_table")
         ),
